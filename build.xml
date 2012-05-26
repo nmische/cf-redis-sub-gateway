@@ -1,62 +1,58 @@
 <project name="cf-redis-sub-gateway" default="make" basedir=".">
-    <property name="java.home" value="env.JAVA_HOME"/>
-    <property name="cf.home" value="/Applications/ColdFusion10/cfusion"/>
-    <property name="cfusionjar" value="${cf.home}/lib/cfusion.jar"/>
-	<property file="version.properties"/>
-	
-	<property name="lib.dir" value="lib"/>
+	<property name="java.home" value="env.JAVA_HOME" />
+	<property name="cf.home" value="/Applications/ColdFusion10/cfusion" />
+	<property name="cfusionjar" value="${cf.home}/lib/cfusion.jar" />
+	<property file="version.properties" />
 
-    <path id="classpath">
-        <fileset dir="${lib.dir}" includes="**/*.jar"/>
-    </path>
-	
-    <target name="make" depends="clean,compile,jar" 
-    		description="The default: build everything"/>
+	<property name="lib.dir" value="lib" />
 
-    <target name="make-dist" depends="clean,compile,jar" description="Packages up distro.">
-        <mkdir dir="${basedir}/dist"/>
-        <zip destfile="${basedir}/dist/${ant.project.name}-${version}.zip">
-            <zipfileset dir="${basedir}/bin" includes="*.jar"/>
-            <zipfileset dir="${basedir}/lib" includes="*.jar"/>
-            <zipfileset dir="${basedir}" includes="LICENSE,README.md"/>
-        </zip>
-    </target>
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
+	</path>
 
-    <target name="install" depends="make,remove-files,copy-files" 
-    		description="Builds everything and copies files to ColdFuison."/>
+	<target name="make" depends="clean,compile,jar" description="The default: build everything" />
 
-    <target name="jar" description="Create the jar file.">
-        <jar destfile="${basedir}/bin/${ant.project.name}-${version}.jar">
-            <fileset dir="${basedir}/bin"/>
-        </jar>
-    </target>
+	<target name="make-dist" depends="clean,compile,jar" description="Packages up distro.">
+		<mkdir dir="${basedir}/dist" />
+		<zip destfile="${basedir}/dist/${ant.project.name}-${version}.zip">
+			<zipfileset dir="${basedir}/bin" includes="*.jar" />
+			<zipfileset dir="${basedir}/lib" includes="*.jar" />
+			<zipfileset dir="${basedir}" includes="LICENSE,README.md" />
+		</zip>
+	</target>
 
-    <target name="clean" description="Remove compiled classes and jar.">
-        <delete dir="${basedir}/bin"/>
-    </target>
+	<target name="install" depends="make,remove-files,copy-files" description="Builds everything and copies files to ColdFuison." />
 
-    <target name="compile" description="Compile the java classes.">
-        <mkdir dir="${basedir}/bin"/>
-        <javac srcdir="${basedir}/src" destdir="${basedir}/bin" fork="true">
-        	<classpath>
-        		<path refid="classpath"/>
-                <path location="${cfusionjar}"/>
+	<target name="jar" description="Create the jar file.">
+		<jar destfile="${basedir}/bin/${ant.project.name}-${version}.jar">
+			<fileset dir="${basedir}/bin" />
+		</jar>
+	</target>
+
+	<target name="clean" description="Remove compiled classes and jar.">
+		<delete dir="${basedir}/bin" />
+	</target>
+
+	<target name="compile" description="Compile the java classes.">
+		<mkdir dir="${basedir}/bin" />
+		<javac srcdir="${basedir}/src" destdir="${basedir}/bin" fork="true">
+			<classpath>
+				<path refid="classpath" />
+				<path location="${cfusionjar}" />
 			</classpath>
 		</javac>
-    </target>
+	</target>
 
-    <target name="remove-files" 
-    		description="Removes the files from the ColdFusion server.">
-        <delete file="${cf.home}/gateway/lib/${ant.project.name}-${version}.jar" />
+	<target name="remove-files" description="Removes the files from the ColdFusion server.">
+		<delete file="${cf.home}/gateway/lib/${ant.project.name}-${version}.jar" />
 		<delete file="${cf.home}/gateway/lib/jedis-2.1.0.jar" />
-        <delete file="${cf.home}/gateway/config/redis.cfg" />
-    </target>
+		<delete file="${cf.home}/gateway/config/redis.cfg" />
+	</target>
 
-    <target name="copy-files" 
-    		description="Adds files to the ColdFusion server.">    		
-        <copy file="${basedir}/bin/${ant.project.name}-${version}.jar" todir="${cf.home}/gateway/lib"/>
-		<copy file="${basedir}/lib/jedis-2.1.0.jar" todir="${cf.home}/gateway/lib"/>
-        <copy file="${basedir}/config/redis.cfg" todir="${cf.home}/gateway/config"/>
-    </target>
+	<target name="copy-files" description="Adds files to the ColdFusion server.">
+		<copy file="${basedir}/bin/${ant.project.name}-${version}.jar" todir="${cf.home}/gateway/lib" />
+		<copy file="${basedir}/lib/jedis-2.1.0.jar" todir="${cf.home}/gateway/lib" />
+		<copy file="${basedir}/config/redis.cfg" todir="${cf.home}/gateway/config" />
+	</target>
 
 </project>
